@@ -1,73 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Instagram Reels and Stories Downloader</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f0f0f0;
-    }
-    .container {
-      max-width: 600px;
-      margin: 50px auto;
-      padding: 20px;
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    h1 {
-      text-align: center;
-    }
-    form {
-      text-align: center;
-    }
-    input[type="text"] {
-      width: 80%;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
-    button {
-      padding: 10px 20px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Story Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 8px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #downloadLinks {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #downloadLinks a {
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Instagram Reels and Stories Downloader</h1>
+    <h1>Instagram Story Downloader</h1>
     <form id="downloadForm">
-      <input type="text" id="username" placeholder="Enter Instagram username" required>
-      <br>
-      <button type="submit">Download</button>
+        <label for="username">Enter Instagram Username:</label>
+        <input type="text" id="username" name="username" required>
+        <button type="submit">Download Stories</button>
     </form>
     <div id="downloadLinks"></div>
-  </div>
 
-  <script>
-    document.getElementById('downloadForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-      var username = document.getElementById('username').value;
-      var downloadLinksDiv = document.getElementById('downloadLinks');
-      downloadLinksDiv.innerHTML = '<p>Loading...</p>';
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const downloadForm = document.getElementById('downloadForm');
+            const downloadLinks = document.getElementById('downloadLinks');
 
-      // Here you would make an AJAX request to your backend to fetch download links based on the entered username
-      // For simplicity, let's just display a placeholder message
-      setTimeout(function() {
-        downloadLinksDiv.innerHTML = '<p>Download links will appear here...</p>';
-      }, 2000); // Simulating a delay for fetching data
-    });
-  </script>
+            downloadForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const username = document.getElementById('username').value;
+                fetch(`/download?username=${username}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        downloadLinks.innerHTML = '';
+                        data.stories.forEach(story => {
+                            const link = document.createElement('a');
+                            link.href = story.images.standard_resolution.url;
+                            link.textContent = story.caption.text;
+                            downloadLinks.appendChild(link);
+                        });
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        });
+    </script>
 </body>
 </html>
